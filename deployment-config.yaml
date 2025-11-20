@@ -1,0 +1,13 @@
+template-file-path: infra.yaml
+
+parameters:
+  EnvironmentName: prod
+  FrontendBucketName: mi-bucket-frontend-unico-123
+  GitHubOwner: esilvaar
+  GitHubRepo: folil-frontend
+  GitHubBranch: main
+  
+  CodeStarConnectionArn: arn:aws:codeconnections:us-east-2:578513450477:connection/716809c0-871c-407e-b145-6c291d61e9cf
+
+tags:
+  Project: WebApp
