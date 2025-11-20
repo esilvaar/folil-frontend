@@ -1,4 +1,4 @@
-template-file-path: infra.yaml
+template-file-path: frontend-stack.yaml
 
 parameters:
   EnvironmentName: prod
