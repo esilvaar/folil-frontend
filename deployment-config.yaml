@@ -1,4 +1,4 @@
-template-file-path: frontend-stack.yaml
+template-file-path: frontend-stack.yml
 
 parameters:
   EnvironmentName: prod
