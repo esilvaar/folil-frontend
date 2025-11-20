@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: "Frontend Stack: S3, CloudFront & CI/CD (Node.js build)"
+Description: "Frontend Stack: S3, CloudFront & CI/CD (Modernized with CodeStar)"
 
 Parameters:
   EnvironmentName:
@@ -10,29 +10,32 @@ Parameters:
     Default: "my-app-frontend-assets"
   GitHubOwner:
     Type: String
+    Description: "El nombre de usuario u organización de GitHub"
   GitHubRepo:
     Type: String
+    Description: "El nombre del repositorio"
   GitHubBranch:
     Type: String
     Default: "main"
-  GitHubToken:
+  CodeStarConnectionArn:
     Type: String
-    NoEcho: true
+    Description: "El ARN de la conexión creada en Configuración de Desarrollador (CodeStar)"
   BackendApiUrl:
     Type: String
-    Description: "Optional: API URL from Backend Stack (for env vars)"
+    Description: "URL opcional de la API del Backend"
     Default: ""
 
 Resources:
-  # --- Hosting Resources ---
+  # --- Hosting Resources (S3 & CloudFront) ---
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${EnvironmentName}-${FrontendBucketName}"
-      AccessControl: Private # Best practice: use OAI/OAC, but keeping simple based on original
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
+      # Nota: Para producción real, se recomienda bloquear el acceso público y usar OAC.
+      # Se mantiene así por compatibilidad con tu diseño original.
 
   FrontendBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -67,7 +70,7 @@ Resources:
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
 
-  # --- CI/CD (Frontend Only) ---
+  # --- CI/CD (Pipeline Moderno) ---
   PipelineArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -132,13 +135,17 @@ Resources:
         - Name: Source
           Actions:
             - Name: SourceAction
-              ActionTypeId: { Category: Source, Owner: ThirdParty, Provider: GitHub, Version: '1' }
+              ActionTypeId: 
+                Category: Source
+                Owner: AWS 
+                Provider: CodeStarSourceConnection # CAMBIO CLAVE AQUI
+                Version: '1'
               OutputArtifacts: [{ Name: SourceOutput }]
               Configuration:
-                Owner: !Ref GitHubOwner
-                Repo: !Ref GitHubRepo
-                Branch: !Ref GitHubBranch
-                OAuthToken: !Ref GitHubToken
+                ConnectionArn: !Ref CodeStarConnectionArn
+                FullRepositoryId: !Sub "${GitHubOwner}/${GitHubRepo}"
+                BranchName: !Ref GitHubBranch
+                OutputArtifactFormat: CODE_ZIP
         - Name: Build
           Actions:
             - Name: BuildReact
