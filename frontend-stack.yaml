@@ -141,7 +141,8 @@ Resources:
     Properties:
       Name: !Sub "${EnvironmentName}-frontend-build"
       ServiceRole: !Ref CodeBuildRole
-      Artifacts: { Type: CODEPIPELINE }
+      Artifacts:
+        Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
         Image: aws/codebuild/standard:5.0
@@ -149,24 +150,27 @@ Resources:
         EnvironmentVariables:
           - Name: VITE_API_URL
             Value: !Ref BackendApiUrl
-      Source: { Type: CODEPIPELINE }
-      BuildSpec: |
-        version: 0.2
-        phases:
-          install:
-            runtime-versions:
-              nodejs: 14
-            commands:
-              - echo Installing dependencies...
-              - npm install
-          build:
-            commands:
-              - echo Building React app...
-              - npm run build
-        artifacts:
-          files:
-            - '**/*'
-          base-directory: build
+      # --- CORRECCIÓN AQUÍ ABAJO ---
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                nodejs: 14
+              commands:
+                - echo Installing dependencies...
+                - npm install
+            build:
+              commands:
+                - echo Building React app...
+                - npm run build
+          artifacts:
+            files:
+              - '**/*'
+            base-directory: build
+      # -----------------------------
 
   FrontendPipeline:
     Type: AWS::CodePipeline::Pipeline
@@ -210,5 +214,6 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
 
