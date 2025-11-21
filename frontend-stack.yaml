@@ -150,7 +150,6 @@ Resources:
         EnvironmentVariables:
           - Name: VITE_API_URL
             Value: !Ref BackendApiUrl
-      # --- CORRECCIÓN AQUÍ ABAJO ---
       Source:
         Type: CODEPIPELINE
         BuildSpec: |
@@ -170,8 +169,6 @@ Resources:
             files:
               - '**/*'
             base-directory: dist
-      # -----------------------------
-
   FrontendPipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -214,6 +211,7 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
 
 
