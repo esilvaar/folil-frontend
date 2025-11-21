@@ -136,7 +136,7 @@ Resources:
                   - codestar-connections:UseConnection
                 Resource: !Ref CodeStarConnectionArn
 
-  FrontendBuildProject:
+FrontendBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub "${EnvironmentName}-frontend-build"
@@ -145,7 +145,8 @@ Resources:
         Type: CODEPIPELINE
       Environment:
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:5.0
+        # CAMBIO 1: Usar imagen moderna (Standard 7.0) para soportar herramientas nuevas
+        Image: aws/codebuild/standard:7.0
         Type: LINUX_CONTAINER
         EnvironmentVariables:
           - Name: VITE_API_URL
@@ -157,7 +158,8 @@ Resources:
           phases:
             install:
               runtime-versions:
-                nodejs: 14
+                # CAMBIO 2: Usar Node 20 (Requerido por Vite 7 y React 19)
+                nodejs: 20
               commands:
                 - echo Installing dependencies...
                 - npm install
@@ -165,6 +167,8 @@ Resources:
               commands:
                 - echo Building React app...
                 - npm run build
+                # Comando de depuración para verificar que 'dist' se creó
+                - ls -la
           artifacts:
             files:
               - '**/*'
@@ -211,6 +215,7 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
 
 
