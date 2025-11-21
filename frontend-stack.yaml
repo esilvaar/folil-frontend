@@ -82,8 +82,25 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement: [{Effect: Allow, Principal: {Service: codebuild.amazonaws.com}, Action: sts:AssumeRole}]
-      # CAMBIO AQUÍ: Usamos AdministratorAccess porque la otra ya no existe
-      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
+      Policies:
+        - PolicyName: CodeBuildBasePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                  - !Sub "arn:aws:s3:::${FrontendBucket}/*"
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -91,8 +108,31 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement: [{Effect: Allow, Principal: {Service: codepipeline.amazonaws.com}, Action: sts:AssumeRole}]
-      # CAMBIO AQUÍ: Usamos AdministratorAccess porque AWSCodePipelineFullAccess fue eliminada
-      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
+      Policies:
+        - PolicyName: CodePipelineBasePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:PutObject
+                  - s3:GetBucketVersioning
+                Resource:
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}"
+                  - !Sub "arn:aws:s3:::${PipelineArtifactBucket}/*"
+                  - !Sub "arn:aws:s3:::${FrontendBucket}"
+                  - !Sub "arn:aws:s3:::${FrontendBucket}/*"
+              - Effect: Allow
+                Action:
+                  - codebuild:BatchGetBuilds
+                  - codebuild:StartBuild
+                Resource: !GetAtt FrontendBuildProject.Arn
+              - Effect: Allow
+                Action:
+                  - codestar-connections:UseConnection
+                Resource: !Ref CodeStarConnectionArn
 
   FrontendBuildProject:
     Type: AWS::CodeBuild::Project
@@ -168,3 +208,4 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
