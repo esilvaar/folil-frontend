@@ -82,7 +82,8 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement: [{Effect: Allow, Principal: {Service: codebuild.amazonaws.com}, Action: sts:AssumeRole}]
-      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AWSCodeBuildDeveloperAccess" ]
+      # CAMBIO AQUÍ: Usamos AdministratorAccess porque la otra ya no existe
+      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
 
   CodePipelineRole:
     Type: AWS::IAM::Role
@@ -90,7 +91,8 @@ Resources:
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement: [{Effect: Allow, Principal: {Service: codepipeline.amazonaws.com}, Action: sts:AssumeRole}]
-      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AWSCodePipelineFullAccess" ]
+      # CAMBIO AQUÍ: Usamos AdministratorAccess porque AWSCodePipelineFullAccess fue eliminada
+      ManagedPolicyArns: [ "arn:aws:iam::aws:policy/AdministratorAccess" ]
 
   FrontendBuildProject:
     Type: AWS::CodeBuild::Project
@@ -164,4 +166,5 @@ Resources:
 
 Outputs:
   CloudFrontURL:
+
     Value: !GetAtt FrontendCloudFront.DomainName
