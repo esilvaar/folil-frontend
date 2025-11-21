@@ -169,7 +169,7 @@ Resources:
           artifacts:
             files:
               - '**/*'
-            base-directory: build
+            base-directory: dist
       # -----------------------------
 
   FrontendPipeline:
@@ -214,6 +214,7 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
 
 
