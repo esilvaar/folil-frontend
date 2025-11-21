@@ -136,7 +136,7 @@ Resources:
                   - codestar-connections:UseConnection
                 Resource: !Ref CodeStarConnectionArn
 
-FrontendBuildProject:
+  FrontendBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Name: !Sub "${EnvironmentName}-frontend-build"
@@ -215,6 +215,7 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
 
 
