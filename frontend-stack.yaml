@@ -26,7 +26,7 @@ Parameters:
     Default: ""
 
 Resources:
-  # --- Hosting Resources (S3 & CloudFront) ---
+
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -34,8 +34,11 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: index.html
-      # Nota: Para producción real, se recomienda bloquear el acceso público y usar OAC.
-      # Se mantiene así por compatibilidad con tu diseño original.
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
 
   FrontendBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -70,7 +73,6 @@ Resources:
         ViewerCertificate:
           CloudFrontDefaultCertificate: true
 
-  # --- CI/CD (Pipeline Moderno) ---
   PipelineArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -180,7 +182,7 @@ Resources:
               ActionTypeId: 
                 Category: Source
                 Owner: AWS 
-                Provider: CodeStarSourceConnection # CAMBIO CLAVE AQUI
+                Provider: CodeStarSourceConnection
                 Version: '1'
               OutputArtifacts: [{ Name: SourceOutput }]
               Configuration:
@@ -208,4 +210,5 @@ Outputs:
   CloudFrontURL:
 
     Value: !GetAtt FrontendCloudFront.DomainName
+
 
